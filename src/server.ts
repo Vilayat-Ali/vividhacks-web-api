@@ -1,6 +1,11 @@
 // Dependencies 
 import express, {Request, Response} from "express";
 import mongoose from "mongoose";
+import * as Env from "dotenv";
+import cookieParser from "cookie-parser";
+
+// Environment Variables
+Env.config({path: __dirname+"/../.env"});
 
 
 // app configs
@@ -10,15 +15,17 @@ const app = express();
 
 // Defining middlewares
 app.use(express.json());
+app.use(cookieParser());
 
 // adding databases
-mongoose.connect("mongodb://127.0.0.1/team_management_app", (err)=>{
+mongoose.connect(process.env.DATABASEURI!, (err)=>{
     if(err) throw err;
     else console.log("Connected to DB!");
 });
 
 // importing routes
 import {accountRouter} from "./routes/account";
+import {teamRouter} from "./routes/team";
 
 // Managing routes
 
@@ -48,6 +55,7 @@ app.get("/", (req:Request, res:Response) => {
 });
 
 app.use("/account", accountRouter);
+app.use("/team", teamRouter);
 
 // app listening
 app.listen(port, ()=>{
