@@ -26,6 +26,7 @@ mongoose.connect(process.env.DATABASEURI!, (err)=>{
 // importing routes
 import {accountRouter} from "./routes/account";
 import {teamRouter} from "./routes/team";
+import {analyticsRouter} from "./routes/analytics";
 
 // Managing routes
 
@@ -56,6 +57,7 @@ app.get("/", (req:Request, res:Response) => {
 
 app.use("/account", accountRouter);
 app.use("/team", teamRouter);
+app.use("/analytics", analyticsRouter);
 
 // app listening
 app.listen(port, ()=>{

@@ -2,7 +2,7 @@
 import express, {Request, Response} from "express";
 import * as jwt from "jsonwebtoken";
 import bcryptjs from "bcryptjs"
-import cookieParser from "cookie-parser";
+// import cookieParser from "cookie-parser";
 
 const accountRouter = express.Router();
 
@@ -44,7 +44,7 @@ accountRouter.post("/register/user", async(req:Request, res:Response) => {
                                     }, process.env.SECRETKEY!);
         
         // Saving cookie
-        res.cookie("team-management-app-user-data", accessToken, {httpOnly: true}).json({"success": true, "user": userModel});
+        res.cookie("vividhacks", accessToken, {httpOnly: true}).json({"success": true, "user": userModel});
 
         } // eslint-disable-next-line @typescript-eslint/no-explicit-any
         catch(err:any){
@@ -52,6 +52,11 @@ accountRouter.post("/register/user", async(req:Request, res:Response) => {
                         res.json({"success": false, "message": err.message});
                     }
     }
+});
+
+// User login
+accountRouter.post("/login", (req:Request, res:Response) => {
+    res.send("Hello")
 });
 
 

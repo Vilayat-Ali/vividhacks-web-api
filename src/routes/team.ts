@@ -4,7 +4,7 @@ const teamRouter = express.Router();
 
 
 teamRouter.get("/", (req:Request, res:Response) => {
-    res.cookie("hello", "Ali", {httpOnly: true}).json({success: "OK"})
+    res.json({success: "OK"})
 });
 
 export {teamRouter};
