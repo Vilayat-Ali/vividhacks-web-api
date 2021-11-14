@@ -58,9 +58,22 @@ try{
 });
 
 // delete team
-teamRouter.delete("/delete/:team", authenticateUser, async(req:Request, res:Response) => {
+teamRouter.get("/test/:team", authenticateUser, async(req:Request, res:Response) => {
     try{    
-        const isLeader = await team.findOne({teamName: req.params.team});
+        const isLeader:any = await team.findOne({teamName: req.params.team}, 
+                                            {
+                                                members: 
+                                                {
+                                                    $elemMatch: {
+                                                    role: "Team Leader"
+                                                }
+                                            }
+                                        });
+        if(isLeader.members.length===0) res.json({"success": true, "message": "User not Authorized!"});
+        else{
+            const deleteTeam = await team.deleteOne({teamName: req.params.team});
+            res.json({"success": true, "message": "Team deleted successfully!", "meta": deleteTeam});
+        }
     }catch(err:any){
         if(err) res.json({"success": false, "message": err.message});
     }

@@ -11,7 +11,8 @@ import {NextFunction, Request, Response} from "express";
 
 export function generateJWTToken(username:string, email:string, organisation:string){
     try{
-            return sign({ username, email, organisation }, process.env.SECRETKEY!);
+            if(organisation===undefined) return sign({ username, email, organisation: "Another FaceBook INC"}, process.env.SECRETKEY!);
+            else return sign({username,email,organisation}, process.env.SECRETKEY!);
     }catch(err){
         if(err) return null;
     }
