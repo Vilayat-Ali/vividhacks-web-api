@@ -11,7 +11,7 @@ Env.config({path: __dirname+"/../.env"});
 
 
 // app configs
-const port = 8080 || process.env.PORT;
+const port = 3000 || process.env.PORT;
 
 const app = express();
 
