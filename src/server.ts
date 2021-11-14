@@ -5,6 +5,7 @@ import express, {Request, Response} from "express";
 import mongoose from "mongoose";
 import * as Env from "dotenv";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 // Environment Variables
 Env.config({path: __dirname+"/../.env"});
@@ -12,13 +13,14 @@ Env.config({path: __dirname+"/../.env"});
 
 // app configs
 const port = 3000 || process.env.PORT;
-const host = '0.0.0.0' || process.env.HOST;
+const host = process.env.HOST||"0.0.0.0";
 
 const app = express();
 
 // Defining middlewares
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors());
 
 // adding databases
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
