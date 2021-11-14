@@ -12,6 +12,7 @@ Env.config({path: __dirname+"/../.env"});
 
 // app configs
 const port = 3000 || process.env.PORT;
+const host = '0.0.0.0' || process.env.HOST;
 
 const app = express();
 
@@ -67,6 +68,6 @@ app.use("/team", teamRouter);
 app.use("/analytics", analyticsRouter);
 
 // app listening
-app.listen(port, '0.0.0.0', ()=>{
-    console.log(`Server running on port ${port}`);
+app.listen(port, host, ()=>{
+    console.log(`Server running on ${host}:${port}`);
 });
