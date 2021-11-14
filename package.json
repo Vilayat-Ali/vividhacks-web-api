@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc -p .",
     "devserver": "nodemon --exec ts-node src/server.ts",
-    "start": "node  build/server.js",
+    "start": "ts-node src/server.ts",
     "postinstall": "yarn run build",
     "worker": "node build/server.js"
   },

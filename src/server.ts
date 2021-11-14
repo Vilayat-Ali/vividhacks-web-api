@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 // Dependencies 
@@ -11,6 +12,8 @@ import cors from "cors";
 Env.config({path: __dirname+"/../.env"});
 
 const app = express();
+
+const port = 8000||process.env.PORT;
 
 // Defining middlewares
 app.use(express.json());
@@ -36,28 +39,32 @@ import {analyticsRouter} from "./routes/analytics";
 // Managing routes
 
 app.get("/", (req:Request, res:Response) => {
-    res.json({"status": "OK", "project": {
-        "name": "TEAM MANAGEMENT WEB APP API",
-        "author": "Syed Vilayat Ali Rizvi",
-        "competition": "Vivid Hacks 2021",
-        "team_members":[{
-            "name": "Syed Vilayat Ali Rizvi",
-            "email": "vilayatcodemysite@gmail.com",
-            "role": ["Backend Engineer", "Database Administrator", "Team Leader"]
-        },{
-            "name": "Brayden Wright",
-            "email": "brayden45.dev@gmail.com",
-            "role": ["Front-End Engineer", "Team Leader"]
-        },{
-            "name": "Anant Kushyup",
-            "email": "ananthkashyap4@gmail.com",
-            "role": ["Frontend Engineer", "Research Lead"]
-        },{
-            "name": "Farhan Haider",
-            "email": "riz4mix@gmail.com",
-            "role": ["Graphic Designer", "Asset Manager"]
-        }]
-    }});
+    res.json(
+        {
+            "status": "OK", 
+            "project": {
+            "name": "TEAM MANAGEMENT WEB APP API",
+            "author": "Syed Vilayat Ali Rizvi",
+            "competition": "Vivid Hacks 2021",
+            "team_members":[{
+                "name": "Syed Vilayat Ali Rizvi",
+                "email": "vilayatcodemysite@gmail.com",
+                "role": ["Backend Engineer", "Database Administrator", "Team Leader"]
+            },{
+                "name": "Brayden Wright",
+                "email": "brayden45.dev@gmail.com",
+                "role": ["Front-End Engineer", "Team Leader"]
+            },{
+                "name": "Anant Kushyup",
+                "email": "ananthkashyap4@gmail.com",
+                "role": ["Frontend Engineer", "Research Lead"]
+            },{
+                "name": "Farhan Haider",
+                "email": "riz4mix@gmail.com",
+                "role": ["Graphic Designer", "Asset Manager"]
+            }]
+    }
+});
 });
 
 app.use("/account", accountRouter);
@@ -65,6 +72,6 @@ app.use("/team", teamRouter);
 app.use("/analytics", analyticsRouter);
 
 // app listening
-app.listen(8000, process.env.HOST||"0.0.0.0", ()=>{
+app.listen(port, process.env.HOST||"0.0.0.0", ()=>{
     console.log("Server running ...");
 });
