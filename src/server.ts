@@ -23,10 +23,10 @@ app.use(cors());
 // adding databases
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 try{
-mongoose.connect(process.env.DATABASEURI!, (err)=>{
-    if(err) throw err;
-    else console.log("Connected to DB!");
-});
+    mongoose.connect(process.env.DATABASEURI!, (err)=>{
+        if(err) throw err;
+        else console.log("Connected to DB!");
+    });
 }catch(err:any){
     console.log(err.message)
 }
@@ -37,7 +37,6 @@ import {teamRouter} from "./routes/team";
 import {analyticsRouter} from "./routes/analytics";
 
 // Managing routes
-
 app.get("/", (req:Request, res:Response) => {
     res.json(
         {
@@ -46,7 +45,8 @@ app.get("/", (req:Request, res:Response) => {
             "name": "TEAM MANAGEMENT WEB APP API",
             "author": "Syed Vilayat Ali Rizvi",
             "competition": "Vivid Hacks 2021",
-            "team_members":[{
+            "team_members":[
+            {
                 "name": "Syed Vilayat Ali Rizvi",
                 "email": "vilayatcodemysite@gmail.com",
                 "role": ["Backend Engineer", "Database Administrator", "Team Leader"]
@@ -62,7 +62,8 @@ app.get("/", (req:Request, res:Response) => {
                 "name": "Farhan Haider",
                 "email": "riz4mix@gmail.com",
                 "role": ["Graphic Designer", "Asset Manager"]
-            }]
+            }
+        ]
     }
 });
 });
@@ -73,5 +74,5 @@ app.use("/analytics", analyticsRouter);
 
 // app listening
 app.listen(port, process.env.HOST||"0.0.0.0", ()=>{
-    console.log("Server running ...");
+    console.log(`Server running on http://localhost:${port}`);
 });
