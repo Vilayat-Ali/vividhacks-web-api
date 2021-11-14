@@ -10,11 +10,6 @@ import cors from "cors";
 // Environment Variables
 Env.config({path: __dirname+"/../.env"});
 
-
-// app configs
-const port = 3000 || process.env.PORT;
-const host = process.env.HOST||"0.0.0.0";
-
 const app = express();
 
 // Defining middlewares
@@ -70,6 +65,6 @@ app.use("/team", teamRouter);
 app.use("/analytics", analyticsRouter);
 
 // app listening
-app.listen(port, host, ()=>{
-    console.log(`Server running on ${host}:${port}`);
+app.listen(8000, process.env.HOST||"0.0.0.0", ()=>{
+    console.log("Server running ...");
 });
