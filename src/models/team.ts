@@ -9,9 +9,9 @@ interface memberI{
 interface teamI{
     teamName: string,
     organisation: string,
-    description: string,
+    description?: string,
     members: memberI,
-    tasks: string[]
+    tasks?: string[]
 }
 
 const memberSchema = new Schema<memberI>({

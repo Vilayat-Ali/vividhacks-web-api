@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // dependency 
 import express, {Request, Response} from "express";
-import * as jwt from "jsonwebtoken";
 import bcryptjs from "bcryptjs"
-// import cookieParser from "cookie-parser";
+import { generateJWTToken, authenticateUser} from "./../middlewares/auth";
 
 const accountRouter = express.Router();
 
@@ -10,9 +10,9 @@ const accountRouter = express.Router();
 import {user} from "./../models/users";
 
 // Get a specific user 
-accountRouter.get("/get/user", async(req:Request, res:Response) => {
+accountRouter.get("/get/user", authenticateUser, async(req:Request, res:Response) => {
     try{
-        const wantedUser:unknown = await user.findOne({"username": req.body.username, "organisation": req.body.organisation});
+        const wantedUser:unknown = await user.findOne({"email": req.body.email, "organisation": req.body.organisation});
         res.json({"success": true, "user": wantedUser});
     }catch(err){
         if(err){
@@ -25,27 +25,26 @@ accountRouter.get("/get/user", async(req:Request, res:Response) => {
 accountRouter.post("/register/user", async(req:Request, res:Response) => {
     try{
         const userModel = new user(   {username: req.body.username,
-                                            email: req.body.email,
-                                            description: req.body.description,
-                                            organisation: req.body.organisation,
-                                            password: bcryptjs.hashSync(req.body.password, 5),
-                                            role: req.body.role}    );
+                                        email: req.body.email,
+                                        description: req.body.description,
+                                        organisation: req.body.organisation,
+                                        password: bcryptjs.hashSync(req.body.password, 5),
+                                        role: req.body.role}    );
 
+        const accessToken = generateJWTToken(req.body.username, req.body.email, req.body.organisation);
+        
+        if(accessToken !== null){
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await userModel.save((err:any) => {
             if (err)
                 res.json({ "success": false, "message": err.message });
         });
 
-        const accessToken = jwt.sign({
-                                        username: req.body.username,
-                                        email: req.body.email,
-                                        organisation: req.body.organisation
-                                    }, process.env.SECRETKEY!);
-        
         // Saving cookie
-        res.cookie("vividhacks", accessToken, {httpOnly: true}).json({"success": true, "user": userModel});
-
+        res.cookie("vividhacks", accessToken, {httpOnly: true}).json({"success": true, "user": userModel, "accessToken": accessToken});
+    }else{
+        res.json({"success": false, "message": "Failed to sign a JWT token for this user."})
+    }
         } // eslint-disable-next-line @typescript-eslint/no-explicit-any
         catch(err:any){
                     if(err){
@@ -55,9 +54,31 @@ accountRouter.post("/register/user", async(req:Request, res:Response) => {
 });
 
 // User login
-accountRouter.post("/login", (req:Request, res:Response) => {
-    res.send("Hello")
+accountRouter.post("/login/user", authenticateUser, async(req:Request, res:Response) => {
+try{
+    const suspectedUser = await user.findOne({email: req.body.email}); // Suspected user
+    if(suspectedUser!==null){
+        const userAuth = await bcryptjs.compare(req.body.password, suspectedUser.password);
+        if(userAuth){
+            res.json({"success": true, "user": suspectedUser});
+        }else{
+            res.json({"success": false, "message": "Invalid password"});
+        }
+    }
+}catch(err){
+    if(err) res.json({"success": false, "message": "User not found."})
+}
 });
 
+// Deleting the account
+accountRouter.delete("/delete/user", authenticateUser, async(req:Request, res:Response)=>{
+try{
+    const idToBeDeleted = req.user;
+    const deletedUser = await user.deleteOne({idToBeDeleted});
+    res.json({"success": true, "message": "user deleted successfully", "meta": deletedUser});
+}catch(err:any){
+    if(err) res.json({"success": false, "message": err.message});
+}
+});
 
 export {accountRouter};

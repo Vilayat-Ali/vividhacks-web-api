@@ -18,6 +18,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // adding databases
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 mongoose.connect(process.env.DATABASEURI!, (err)=>{
     if(err) throw err;
     else console.log("Connected to DB!");
