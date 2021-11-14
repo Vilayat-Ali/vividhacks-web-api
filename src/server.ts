@@ -67,6 +67,6 @@ app.use("/team", teamRouter);
 app.use("/analytics", analyticsRouter);
 
 // app listening
-app.listen(port, ()=>{
+app.listen(port,' 0.0.0.0', ()=>{
     console.log(`Server running on port ${port}`);
 });

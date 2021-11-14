@@ -1,13 +1,13 @@
 {
   "name": "team-management-app-web-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "build/server.js",
   "author": "Syed Vilayat Ali Rizvi",
   "license": "MIT",
   "scripts": {
     "build": "tsc -p .",
     "devserver": "nodemon --exec ts-node src/server.ts",
-    "start": "node  build/server.js"
+    "start": "node  build/server.js -p $PORT"
   },
   "dependencies": {
     "@types/dotenv": "^8.2.0",
