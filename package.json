@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc -p .",
     "devserver": "nodemon --exec ts-node src/server.ts",
-    "app": "node  build/server.js"
+    "start": "node  build/server.js"
   },
   "dependencies": {
     "@types/dotenv": "^8.2.0",
@@ -36,5 +36,8 @@
     "@typescript-eslint/parser": "^5.3.1",
     "eslint": "^8.2.0",
     "nodemon": "^2.0.14"
+  },
+  "engines": {
+    "node": "^16.13.0"
   }
 }

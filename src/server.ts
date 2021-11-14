@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 // Dependencies 
 import express, {Request, Response} from "express";
 import mongoose from "mongoose";
@@ -19,10 +21,14 @@ app.use(cookieParser());
 
 // adding databases
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+try{
 mongoose.connect(process.env.DATABASEURI!, (err)=>{
     if(err) throw err;
     else console.log("Connected to DB!");
 });
+}catch(err:any){
+    console.log(err.message)
+}
 
 // importing routes
 import {accountRouter} from "./routes/account";
