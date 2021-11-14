@@ -41,7 +41,7 @@ import {analyticsRouter} from "./routes/analytics";
 // Managing routes
 
 app.get("/", (req:Request, res:Response) => {
-    res.status(200).json({"status": "OK", "project": {
+    res.json({"status": "OK", "project": {
         "name": "TEAM MANAGEMENT WEB APP API",
         "author": "Syed Vilayat Ali Rizvi",
         "competition": "Vivid Hacks 2021",
