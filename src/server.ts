@@ -13,12 +13,14 @@ Env.config({path: __dirname+"/../.env"});
 
 const app = express();
 
-const port = 8000||process.env.PORT;
+const port = process.env.PORT;
 
 // Defining middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
+
+app.set('port', process.env.PORT||8080);
 
 // adding databases
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -73,6 +75,6 @@ app.use("/team", teamRouter);
 app.use("/analytics", analyticsRouter);
 
 // app listening
-app.listen(port, process.env.HOST||"0.0.0.0", ()=>{
+app.listen(app.get('port'), process.env.HOST||"0.0.0.0", ()=>{
     console.log(`Server running on http://localhost:${port}`);
 });
