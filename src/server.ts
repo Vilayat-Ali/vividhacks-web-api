@@ -11,7 +11,7 @@ Env.config({path: __dirname+"/../.env"});
 
 
 // app configs
-const port = 8000 || process.env.PORT;
+const port = 8080 || process.env.PORT;
 
 const app = express();
 
@@ -67,6 +67,6 @@ app.use("/team", teamRouter);
 app.use("/analytics", analyticsRouter);
 
 // app listening
-app.listen(port,' 0.0.0.0', ()=>{
+app.listen(port, '0.0.0.0', ()=>{
     console.log(`Server running on port ${port}`);
 });

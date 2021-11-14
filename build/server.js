@@ -32,7 +32,7 @@ var cookie_parser_1 = __importDefault(require("cookie-parser"));
 // Environment Variables
 Env.config({ path: __dirname + "/../.env" });
 // app configs
-var port = 8000 || process.env.PORT;
+var port = 8080 || process.env.PORT;
 var app = (0, express_1.default)();
 // Defining middlewares
 app.use(express_1.default.json());
@@ -83,6 +83,6 @@ app.use("/account", account_1.accountRouter);
 app.use("/team", team_1.teamRouter);
 app.use("/analytics", analytics_1.analyticsRouter);
 // app listening
-app.listen(port, ' 0.0.0.0', function () {
+app.listen(port, '0.0.0.0', function () {
     console.log("Server running on port " + port);
 });
