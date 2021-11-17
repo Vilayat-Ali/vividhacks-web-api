@@ -20,24 +20,38 @@ teamRouter.get("/get/info/:team", authenticateUser, async(req:Request, res:Respo
 // Creating a new team
 teamRouter.post("/create", authenticateUser, async(req:Request, res:Response) => {
 try{
-    const teamModel = new team({
-        team_name: req.body.team_name,
-        description: req.body.description,
-        members: {
-            username: req.user.username, 
-            role: ["Team Leader"]
-        }
-    });
+    // Team should be unique in an organisation and the person who creates it should be the leader 
+    const ifTeamExists = await team.findOne({team_name: req.body.team_name, organisation: req.user.organisation});
+    if(ifTeamExists!==null){ // record exists
+        res.json({"success": false, "message": "Cannot create team with same name within the same organisation"});
+    }else{ // record does not exists
 
-    const teamifExist = await team.findOne({team_name: req.body.team_name, organisation: req.user.organisation});
+        const teamUpdate = new team({
+            team_name: req.body.team_name,
+            organisation: req.user.organisation,
+            description: req.body.description,
+            members: [{
+                username: req.user.username, 
+                role: ["Team Leader"]
+            }]
+        });
 
-    if(teamifExist){
-        const teamSaved = await teamModel.save();
-        res.json({"success": true, "team": teamModel, "meta": teamSaved});
-    }else{
-        res.json({"success": false, "message": "Cannot create team with same name within same"});
+        const savedTeam = await teamUpdate.save();
+
+        const updateUser = await user.updateOne({email: req.user.email}, 
+            {
+                $push: {
+                    member_of: {
+                        team_name: req.body.team_name,
+                        role: ["Team Leader"]
+                    }
+                }
+            });
+
+    res.json({"success": true, "meta": [savedTeam, updateUser]});
     }
-}catch(err:any) {
+}
+catch(err:any) {
     if(err) res.json({"success": false, "message": err.message});
 }
 });
@@ -55,31 +69,32 @@ teamRouter.delete("/delete/:teamname", authenticateUser, async(req:Request, res:
 // adding tasks to the team
 teamRouter.post("/add/task", authenticateUser, async(req:Request, res:Response) => {
     try{
-        const teamModel = await team.updateOne({team_name: req.params.teamname, organisation: req.user.organisation}, {
-                                                        $push: {tasks: {
-                                                            taskname: req.body.taskname,
-                                                            setBy: req.user.username
-                                                        }
-                                                    }
-                                                });
-
-        res.json({"success": true, "task": req.body.taskname});
+        const taskExists = await team.findOne({tasks:{$elemMatch: {taskname: req.body.taskname, organization: req.user.organization}}});
+        if(taskExists!==null){
+            const teamUpdate = await team.updateOne({team_name: req.body.team_name, organization: req.user.organization},{
+                $push: {
+                    tasks: {
+                        taskname: req.body.taskname,
+                        setBy: req.user.username
+                    }
+                }
+            });
+            res.json({"success": true, "message": teamUpdate});
+        }else{
+            res.json({"success": false, "message": "Task already exists!"})
+        }
     }catch(err:any) {
         if(err) res.json({"success": false, "message": err.message});
     }
 });
 
 // deleting task from the team
-teamRouter.delete("/delete/task/:taskname", authenticateUser, async(req:Request, res:Response) => {
+teamRouter.delete("/delete/task", authenticateUser, async(req:Request, res:Response) => {
     try{
-        const teamModel = await team.updateOne({team_name: req.params.teamname, organisation: req.user.organisation}, {
-                                                        $pull: {tasks: {
-                                                            taskname: req.params.taskname
-                                                        }
-                                                    }
-                                                });
-
-        res.json({"success": true, "task": `${req.body.taskname} removed successfully!`});
+        const teamUpdate = await team.updateOne({team_name: req.body.team_name, organization: req.user.organization},{
+                $pull: {tasks: {taskname: req.body.taskname}}
+        });
+            res.json({"success": true, "message": teamUpdate});
     }catch(err:any) {
         if(err) res.json({"success": false, "message": err.message});
     }

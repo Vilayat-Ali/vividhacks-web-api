@@ -15,7 +15,7 @@ interface messagesI{
 interface taskI{
     taskname: string,
     setBy: string,
-    deadline: Date
+    deadline: string
 }
 
 interface teamSchemaI{
@@ -35,7 +35,7 @@ const members = new Schema<membersI>({
 const taskSchema = new Schema<taskI>({
     taskname: {type: String, required: true},
     setBy: {type: String, required: true},
-    deadline: {type: Date},
+    deadline: {type: String},
 })
 
 const messages = new Schema<messagesI>({
@@ -47,7 +47,7 @@ const messages = new Schema<messagesI>({
 
 const teamSchema = new Schema<teamSchemaI, taskI, messagesI>({
     team_name: {type:String, required: true},
-    organisation: {type: String, required: true, unique: true},
+    organisation: {type: String, required: true},
     description: {type:String, default: "Description of the team..."},
     tasks: {type: [taskSchema]},
     members: {type: [members]},
