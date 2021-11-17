@@ -27,7 +27,7 @@ const userSchema = new Schema<userSchemaI>({
     username: {type: String, required: true},
     email: {type: String, required: true, unique: true},
     description: {type: String, default: `Hi! Busy at work!`},
-    organisation: {type: String, default: "Another FaceBook INC"},
+    organisation: {type: String},
     password: {type: String, required: true},
     member_of: {type: [partOfSchema]}
 });

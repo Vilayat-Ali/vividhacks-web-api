@@ -7,20 +7,31 @@ import mongoose from "mongoose";
 import * as Env from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import multer from "multer";
 
 // Environment Variables
 Env.config({path: __dirname+"/../.env"});
 
 const app = express();
 
-const port = process.env.PORT;
+const port = Number(process.env.PORT||8080);
 
 // Defining middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
 
-app.set('port', process.env.PORT||8080);
+// adding multer 
+const storage = multer.diskStorage({
+    destination: function(req, file, cb){
+        cb(null, './images');
+    },
+    filename: function(req, file, cb){
+        cb(null, file.originalname);
+    }
+});
+
+const upload = multer({storage: storage});
 
 // adding databases
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -36,7 +47,6 @@ try{
 // importing routes
 import {accountRouter} from "./routes/account";
 import {teamRouter} from "./routes/team";
-import {analyticsRouter} from "./routes/analytics";
 
 // Managing routes
 app.get("/", (req:Request, res:Response) => {
@@ -72,9 +82,8 @@ app.get("/", (req:Request, res:Response) => {
 
 app.use("/account", accountRouter);
 app.use("/team", teamRouter);
-app.use("/analytics", analyticsRouter);
 
 // app listening
-app.listen(app.get('port'), process.env.HOST||"0.0.0.0", ()=>{
+app.listen(port, ()=>{
     console.log(`Server running on http://localhost:${port}`);
 });

@@ -28,20 +28,16 @@ accountRouter.post("/register/user", async(req:Request, res:Response) => {
                                         email: req.body.email,
                                         description: req.body.description,
                                         organisation: req.body.organisation,
-                                        password: bcryptjs.hashSync(req.body.password, 5),
-                                        role: req.body.role}    );
+                                        password: bcryptjs.hashSync(req.body.password, 5)}    );
 
         const accessToken = generateJWTToken(req.body.username, req.body.email, req.body.organisation);
         
         if(accessToken !== null){
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await userModel.save((err:any) => {
-            if (err)
-                res.json({ "success": false, "message": err.message });
-        });
+        const userdata = await userModel.save();
 
         // Saving cookie
-        res.cookie("vividhacks", accessToken, {httpOnly: true}).json({"success": true, "user": userModel, "accessToken": accessToken});
+        res.cookie("vividhacks", accessToken, {httpOnly: true}).json({"success": true, "user": userdata, "accessToken": accessToken});
     }else{
         res.json({"success": false, "message": "Failed to sign a JWT token for this user."})
     }
@@ -71,11 +67,20 @@ try{
 });
 
 // Deleting the account
-accountRouter.delete("/delete/user", authenticateUser, async(req:Request, res:Response)=>{
+accountRouter.get("/delete/user", authenticateUser, async(req:Request, res:Response)=>{
 try{
     const idToBeDeleted = req.user;
+    // Deleting user
     const deletedUser = await user.deleteOne({idToBeDeleted});
-    res.json({"success": true, "message": "user deleted successfully", "meta": deletedUser});
+    // deleting teams associated with the user
+    const teamCreatedByUser = await user.findOne({username: req.user.username}, {
+        member_of: {
+            $elemMatch: {
+                role: "Team Leader"
+            }
+        }
+    });
+    res.json({"success": true, "message": deletedUser, "meta": teamCreatedByUser?.member_of});
 }catch(err:any){
     if(err) res.json({"success": false, "message": err.message});
 }

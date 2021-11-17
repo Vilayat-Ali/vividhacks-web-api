@@ -1,32 +1,59 @@
 import {Schema, model} from "mongoose";
 
-
-interface memberI{
+interface membersI{
     username: string,
     role: string[]
 }
 
-interface teamI{
-    teamName: string,
-    organisation: string,
-    description?: string,
-    members: memberI,
-    tasks?: string[]
+interface messagesI{
+    receiver: string,
+    sender: string,
+    message: string,
+    date: number
 }
 
-const memberSchema = new Schema<memberI>({
+interface taskI{
+    taskname: string,
+    setBy: string,
+    deadline: Date
+}
+
+interface teamSchemaI{
+    team_name: string,
+    description: string,
+    organisation: string,
+    tasks: taskI[],
+    members: membersI[], 
+    messages: messagesI[]
+}
+
+const members = new Schema<membersI>({
     username: {type: String, required: true},
-    role: {type: [String]}
+    role: {type: [String], required: true},
 });
 
-const teamSchema = new Schema<teamI>({
-    teamName: {type: String, required: true, unique: true},
-    organisation: {type: String, required: true},
-    description: {type: String, default: "We are a team of hardworking individuals!"},
-    tasks: {type: [String]},
-    members: [memberSchema]
+const taskSchema = new Schema<taskI>({
+    taskname: {type: String, required: true},
+    setBy: {type: String, required: true},
+    deadline: {type: Date},
+})
+
+const messages = new Schema<messagesI>({
+    receiver: {type: String, required: true},
+    sender: {type: String, required: true},
+    message: {type: String, required: true},
+    date: {type: Number, default: Date.now()}
+})
+
+const teamSchema = new Schema<teamSchemaI, taskI, messagesI>({
+    team_name: {type:String, required: true},
+    organisation: {type: String, required: true, unique: true},
+    description: {type:String, default: "Description of the team..."},
+    tasks: {type: [taskSchema]},
+    members: {type: [members]},
+    messages: {type: [messages]}
 });
 
-const team = model("Teams", teamSchema);
+const team = model("team", teamSchema);
 
 export {team};
