@@ -9,7 +9,7 @@ interface messagesI{
     receiver: string,
     sender: string,
     message: string,
-    date: number
+    date: string
 }
 
 interface taskI{
@@ -42,7 +42,7 @@ const messages = new Schema<messagesI>({
     receiver: {type: String, required: true},
     sender: {type: String, required: true},
     message: {type: String, required: true},
-    date: {type: Number, default: Date.now()}
+    date: {type: String}
 })
 
 const teamSchema = new Schema<teamSchemaI, taskI, messagesI>({

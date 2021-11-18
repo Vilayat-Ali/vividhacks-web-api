@@ -73,14 +73,14 @@ try{
     // Deleting user
     const deletedUser = await user.deleteOne({idToBeDeleted});
     // deleting teams associated with the user
-    const teamCreatedByUser = await user.findOne({username: req.user.username}, {
+    const teamCreatedByUser = await user.findOneAndDelete({username: req.user.username}, {
         member_of: {
             $elemMatch: {
                 role: "Team Leader"
             }
         }
     });
-    res.json({"success": true, "message": deletedUser, "meta": teamCreatedByUser?.member_of});
+    res.json({"success": true, "message": [deletedUser, teamCreatedByUser]});
 }catch(err:any){
     if(err) res.json({"success": false, "message": err.message});
 }

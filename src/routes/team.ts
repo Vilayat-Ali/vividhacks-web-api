@@ -3,9 +3,17 @@
 import express, {Request, Response} from "express";
 import {user} from "./../models/users";
 import {team} from "./../models/team";
+import date from 'date-and-time';
 import {authenticateUser} from "./../middlewares/auth";
 
 const teamRouter = express.Router();
+
+function getTime(){
+    const now = new Date();
+    const pattern = date.compile('ddd, MMM DD YYYY');
+    return date.format(now, pattern);                  // => 'Fri, Jan 02 2015'
+}
+
 
 // Getting team information
 teamRouter.get("/get/info/:team", authenticateUser, async(req:Request, res:Response) => {
@@ -67,14 +75,15 @@ teamRouter.delete("/delete/:teamname", authenticateUser, async(req:Request, res:
 });
 
 // adding tasks to the team
-teamRouter.post("/add/task", authenticateUser, async(req:Request, res:Response) => {
+teamRouter.patch("/add/task", authenticateUser, async(req:Request, res:Response) => {
     try{
         const taskExists = await team.findOne({tasks:{$elemMatch: {taskname: req.body.taskname, organization: req.user.organization}}});
-        if(taskExists!==null){
+        if(!taskExists){
             const teamUpdate = await team.updateOne({team_name: req.body.team_name, organization: req.user.organization},{
                 $push: {
                     tasks: {
                         taskname: req.body.taskname,
+                        deadline: req.body.deadline,
                         setBy: req.user.username
                     }
                 }
@@ -89,7 +98,7 @@ teamRouter.post("/add/task", authenticateUser, async(req:Request, res:Response) 
 });
 
 // deleting task from the team
-teamRouter.delete("/delete/task", authenticateUser, async(req:Request, res:Response) => {
+teamRouter.patch("/delete/task", authenticateUser, async(req:Request, res:Response) => {
     try{
         const teamUpdate = await team.updateOne({team_name: req.body.team_name, organization: req.user.organization},{
                 $pull: {tasks: {taskname: req.body.taskname}}
@@ -101,8 +110,38 @@ teamRouter.delete("/delete/task", authenticateUser, async(req:Request, res:Respo
 });
 
 // storing messages in the database
-teamRouter.post("/add/messages", authenticateUser, async(req:Request, res:Response) => {
-    const messageModel = await team.updateOne({organisation: req.user.organisation, team_name: req.body.team_name})
+teamRouter.patch("/add/messages", authenticateUser, async(req:Request, res:Response) => {
+try{
+    const dateNow = getTime();
+    const messageModel = await team.updateOne({organisation: req.user.organisation, team_name: req.body.team_name},{
+        $push: {
+            messages: {
+                receiver: req.body.receiver,
+                sender: req.body.sender,
+                message: req.body.message,
+                date: dateNow
+            }
+        }
+    });
+    res.json({"success": true, "message": messageModel});
+}catch(err:any) {
+    if(err) res.json({"success": false, "message": err.message});
+}
+});
+
+// deleting messages in the database
+teamRouter.patch("/delete/messages", authenticateUser, async(req:Request, res:Response) => {
+    try{
+        const messageModel = await team.updateMany({organisation: req.user.organisation, team_name: req.body.team_name},{
+            $pull: {
+                messages: {
+                }
+            }
+        });
+        res.json({"success": true, "message": messageModel});
+    }catch(err:any) {
+        if(err) res.json({"success": false, "message": err.message});
+    }
 });
 
 export {teamRouter};
